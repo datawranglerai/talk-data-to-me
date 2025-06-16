@@ -4,6 +4,7 @@ from google.adk.tools import BaseTool, ToolContext
 from tools.demo_tools import fake_search, fake_summarise
 
 from typing import Optional, Dict, Any
+from loguru import logger
 
 # Use a cheap OpenAI model for logic
 LLM_MODEL = "openai/gpt-4.1-nano"
@@ -31,8 +32,12 @@ def broadcast_tool_event(
     # Push event to commentator queue (non-blocking)
     try:
         commentator_queue.put_nowait(event_data)
+        logger.debug(f"🎯 CALLBACK: Put event in queue. Queue size now: {commentator_queue.qsize()}")
+        logger.debug(f"--- Tool {tool.name} called for {tool_context.agent_name} ---")  # Add this debug line
     except Exception as e:
-        print(f"Failed to enqueue event: {e}")
+        logger.error(f"Failed to enqueue event: {e}")
+        import traceback
+        logger.error(f"Full error: {traceback.format_exc()}")
 
     return None  # allow the real tool to execute
 
