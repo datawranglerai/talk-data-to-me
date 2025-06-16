@@ -46,27 +46,105 @@ class LiveCommentator(BaseAgent):
         super().__init__(name=name, sub_agents=[])
         _audio_player.start()
 
+    # async def _stream_gemini_live(self, text: str) -> None:
+    #     try:
+    #         # client = Client(vertexai=True)  # project & key from env
+    #         client = Client(api_key=os.getenv("GOOGLE_API_KEY"))
+    #         async with client.aio.live.connect(
+    #                 model=GEMINI_LIVE_MODEL,
+    #                 config=LiveConnectConfig(
+    #                     response_modalities=[Modality.AUDIO],
+    #                     output_audio_transcription={}
+    #                 ),
+    #         ) as session:
+    #             await session.send_client_content(
+    #                 turns=Content(role="user", parts=[Part(text=text)])
+    #             )
+    #             logger.debug("🎤 Listening for Gemini Live audio response...")
+    #             audio_received = False
+    #             text_received = False
+    #             accumulated_text = ""
+    #
+    #             async for response in session.receive():
+    #                 # Handle different response types from Gemini Live
+    #                 if hasattr(response, 'server_content') and response.server_content:
+    #                     server_content = response.server_content
+    #
+    #                     # Check for audio data in inline_data
+    #                     if hasattr(server_content, 'model_turn') and server_content.model_turn:
+    #                         model_turn = server_content.model_turn
+    #                         if hasattr(model_turn, 'parts') and model_turn.parts:
+    #                             for part in model_turn.parts:
+    #                                 if hasattr(part, 'inline_data') and part.inline_data:
+    #                                     audio_data = part.inline_data.data
+    #                                     audio_received = True
+    #                                     logger.debug(f"🔊 AUDIO RECEIVED: {len(audio_data)} bytes!")
+    #                                     # Audio playback
+    #                                     try:
+    #                                         self._play_audio_chunk(audio_data)
+    #                                     except Exception as e:
+    #                                         logger.error(f"There was an error playing commentary audio: {e}")
+    #                                         import traceback
+    #                                         logger.error(f"Full error: {traceback.format_exc()}")
+    #                                         raise
+    #                                 elif hasattr(part, 'text') and part.text:
+    #                                     text_received = True
+    #                                     accumulated_text += part.text  # Accumulate text
+    #                                     logger.debug(f"📝 Text response: {part.text}")
+    #
+    #                     # Alternative: Check for audio directly on server_content
+    #                     elif hasattr(server_content, 'inline_data') and server_content.inline_data:
+    #                         audio_data = server_content.inline_data.data
+    #                         audio_received = True
+    #                         logger.debug(f"🔊 AUDIO RECEIVED: {len(audio_data)} bytes!")
+    #
+    #                     # Alternative: Check for text directly on server_content
+    #                     elif hasattr(server_content, 'text') and server_content.text:
+    #                         text_received = True
+    #                         accumulated_text += server_content.text
+    #                         logger.debug(f"📝 Text response: {server_content.text}")
+    #
+    #             # Display the complete commentary text after streaming
+    #             if accumulated_text.strip():
+    #                 print(f"\n🎙️ LIVE COMMENTARY: {accumulated_text.strip()}\n")
+    #                 # Store in commentary history to avoid repetition
+    #                 self._commentary_history.append(accumulated_text.strip())
+    #
+    #             if not audio_received and not text_received:
+    #                 print("❌ No audio or text data received in Gemini Live response")
+    #             elif audio_received:
+    #                 print("✅ Gemini Live audio response received successfully!")
+    #     except Exception as e:
+    #         print(f"An error occurred streamining Gemini Live: {e}")
+    #         import traceback
+    #         print(f"Full error: {traceback.format_exc()}")
+    #         raise
+
     async def _stream_gemini_live(self, text: str) -> None:
         try:
-            # client = Client(vertexai=True)  # project & key from env
             client = Client(api_key=os.getenv("GOOGLE_API_KEY"))
-            async with client.aio.live.connect(
-                    model=GEMINI_LIVE_MODEL,
-                    config=LiveConnectConfig(response_modalities=[Modality.AUDIO]),
-            ) as session:
+
+            # Enable audio transcription to get text alongside audio
+            config = LiveConnectConfig(
+                response_modalities=[Modality.AUDIO],
+                output_audio_transcription={}  # ← Add this to get transcription
+            )
+
+            async with client.aio.live.connect(model=GEMINI_LIVE_MODEL, config=config) as session:
                 await session.send_client_content(
                     turns=Content(role="user", parts=[Part(text=text)])
                 )
                 logger.debug("🎤 Listening for Gemini Live audio response...")
+
                 audio_received = False
-                text_received = False
+                transcription_received = False
+                accumulated_transcription = ""
 
                 async for response in session.receive():
-                    # Handle different response types from Gemini Live
                     if hasattr(response, 'server_content') and response.server_content:
                         server_content = response.server_content
 
-                        # Check for audio data in inline_data
+                        # Handle model turn (contains audio and other content)
                         if hasattr(server_content, 'model_turn') and server_content.model_turn:
                             model_turn = server_content.model_turn
                             if hasattr(model_turn, 'parts') and model_turn.parts:
@@ -75,44 +153,40 @@ class LiveCommentator(BaseAgent):
                                         audio_data = part.inline_data.data
                                         audio_received = True
                                         # logger.debug(f"🔊 AUDIO RECEIVED: {len(audio_data)} bytes!")
-                                        # Audio playback
                                         try:
                                             self._play_audio_chunk(audio_data)
                                         except Exception as e:
-                                            logger.error(f"There was an error playing commentary audio: {e}")
-                                            import traceback
-                                            logger.error(f"Full error: {traceback.format_exc()}")
+                                            logger.error(f"Audio playback error: {e}")
                                             raise
-                                    elif hasattr(part, 'text') and part.text:
-                                        text_received = True
-                                        print(f"📝 Text response: {part.text}")
 
-                        # Alternative: Check for audio directly on server_content
-                        elif hasattr(server_content, 'inline_data') and server_content.inline_data:
-                            audio_data = server_content.inline_data.data
-                            audio_received = True
-                            logger.debug(f"🔊 AUDIO RECEIVED: {len(audio_data)} bytes!")
+                        # Handle transcription (NEW)
+                        if hasattr(server_content, 'output_transcription') and server_content.output_transcription:
+                            transcription_text = server_content.output_transcription.text
+                            transcription_received = True
+                            accumulated_transcription += transcription_text
+                            # logger.debug(f"📝 Transcription: {transcription_text}")
 
-                        # Alternative: Check for text directly on server_content
-                        elif hasattr(server_content, 'text') and server_content.text:
-                            text_received = True
-                            print(f"📝 Text response: {server_content.text}")
+                # Display transcription as commentary text
+                if accumulated_transcription.strip():
+                    logger.debug(f"📝 Complete Transcription: {accumulated_transcription.strip()}")
+                    print(f"\n🎙️ LIVE COMMENTARY: {accumulated_transcription.strip()}\n")
+                    self._commentary_history.append(accumulated_transcription.strip())
 
-                if not audio_received and not text_received:
-                    print("❌ No audio or text data received in Gemini Live response")
-                elif audio_received:
+                if audio_received:
                     print("✅ Gemini Live audio response received successfully!")
+                if transcription_received:
+                    print("✅ Audio transcription received!")
+
         except Exception as e:
-            print(f"An error occurred streamining Gemini Live: {e}")
-            import traceback
-            print(f"Full error: {traceback.format_exc()}")
+            print(f"An error occurred streaming Gemini Live: {e}")
             raise
 
-    def _play_audio_chunk(self, audio_bytes: bytes):
+    @staticmethod
+    def _play_audio_chunk(audio_bytes: bytes):
         """Play audio chunk through speakers using PyAudio."""
         try:
             _audio_player.add_chunk(audio_bytes)
-            logger.debug(f"🔊 AUDIO BUFFERED: {len(audio_bytes)} bytes!")
+            # logger.debug(f"🔊 AUDIO BUFFERED: {len(audio_bytes)} bytes!")
         except Exception as e:
             logger.error(f"Audio playback failed: {e}")
 
@@ -200,7 +274,8 @@ class LiveCommentator(BaseAgent):
                     messages=[{"role": "user", "content": prompt}]
                 )
                 commentary = response.choices[0].message.content
-                print(f"\n🎙️ LIVE COMMENTARY: {commentary}\n")
+                self._commentary_history.append(commentary)
+                print(f"\n🎙️ LIVE COMMENTARY (Fallback): {commentary}\n")
             except Exception as fallback_error:
                 logger.error(f"Fallback also failed: {fallback_error}")
 

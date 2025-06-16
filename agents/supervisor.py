@@ -7,7 +7,7 @@ from typing import Optional, Dict, Any
 from loguru import logger
 
 # Use a cheap OpenAI model for logic
-LLM_MODEL = "openai/gpt-4.1-nano"
+LLM_MODEL = "openai/gpt-4o"
 
 
 def broadcast_tool_event(
