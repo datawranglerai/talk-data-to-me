@@ -193,11 +193,18 @@ class LiveCommentator(BaseAgent):
     def _get_commentary_style(self) -> str:
         """Rotate between different commentary styles."""
         styles = [
-            "sports announcer with high energy and play-by-play details",
-            "technical analyst focusing on efficiency and patterns",
-            "strategic commentator analyzing decision-making",
-            "investigative reporter uncovering the story behind the actions",
-            "data scientist explaining the technical implications"
+            # <---- ENTERTAINING COMMENTARY PERSONAS ---->
+            # "sports announcer with high energy and play-by-play details",
+            # "technical analyst focusing on efficiency and patterns",
+            # "strategic commentator analyzing decision-making",
+            # "investigative reporter uncovering the story behind the actions",
+            # "data scientist explaining the technical implications",
+            # <---- CRISIS RESPONSE PERSONAS ---->
+            "emergency management expert analyzing response coordination and decision-making",
+            "public safety analyst explaining resource allocation and priority decisions",
+            "transparency advocate highlighting AI decision reasoning and accountability",
+            "citizen journalist making AI crisis response accessible to the general public",
+            "ethics watchdog ensuring AI systems operate within safety guidelines"
         ]
 
         # Rotate based on event count
@@ -215,27 +222,27 @@ class LiveCommentator(BaseAgent):
         # Calculate session progress
         session_duration = time.time() - self._session_start_time
 
-        # Create context-aware prompt
-        base_prompt = f"""You are an AI sports-style commentator in the style of a {style}, providing live analysis of AI agent activities. 
+        base_prompt = f"""You are an AI transparency commentator in the style of a {style}.
 
-        Current Activities:
+        CRISIS RESPONSE ANALYSIS:
         {narration}
-    
+        
+        TRANSPARENCY MANDATE:
+        - Explain WHY each AI agent made specific decisions
+        - Highlight potential biases or limitations in AI reasoning
+        - Make technical decisions accessible to the general public
+        - Point out ethical considerations in crisis AI deployment
+        - Emphasize accountability and human oversight needs
+        
         Session Context:
-        - Event #{self._event_count}
-        - Session running for {session_duration:.1f} seconds
-        - Total events processed: {len(self._buffer)}
-    
-        Previous Commentary (avoid repeating):
-        {chr(10).join(recent_commentary) if recent_commentary else "None"}
-    
-        INSTRUCTIONS:
-        - Provide fresh, varied commentary that's different from previous remarks
-        - Use sports commentary style with energy and insight
-        - Focus on patterns, efficiency, and strategic decisions
-        - Mention specific agent names and tool usage
-        - Keep commentary under 50 words
-        - Be creative with analogies and observations"""
+        - Emergency Response Event #{self._event_count}
+        - Session Duration: {time.time() - self._session_start_time:.1f} seconds
+        - Agents Active: {len(self._buffer)} operations
+        
+        Previous Analysis Topics (avoid repetition):
+        {', '.join(recent_commentary[-2:]) if recent_commentary else 'None'}
+        
+        Provide insightful commentary that promotes AI transparency and public understanding of how these critical decisions are being made."""
 
         return base_prompt
 
