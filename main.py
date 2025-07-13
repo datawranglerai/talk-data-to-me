@@ -3,45 +3,44 @@ import asyncio
 from google.adk.sessions import InMemorySessionService
 from google.adk.agents import ParallelAgent
 from google.adk.runners import Runner
-from agents.crisis_supervisor import crisis_supervisor
-from agents.commentator import LiveCommentator
+from commentator_agent.supervisor import supervisor
+from commentator_agent.commentator import LiveCommentator
 
 from google.genai.types import Content, Part
 
+SESSION_ID = "session1"
+USER_ID = "TESTUSER"
+APP_NAME = "COMMENTATOR_AGENT"
 
-async def hackathon_demo():
+
+async def main():
     session_service = InMemorySessionService()
     await session_service.create_session(
-        app_name="CRISIS_AI_TRANSPARENCY",
-        user_id="PUBLIC_OBSERVER",
-        session_id="WILDFIRE_DEMO_2024"
+        app_name=APP_NAME,
+        user_id=USER_ID,
+        session_id=SESSION_ID
     )
 
     root = ParallelAgent(
-        name="CrisisResponseSystem",
-        sub_agents=[crisis_supervisor, LiveCommentator()]
+        name="Root",
+        sub_agents=[supervisor, LiveCommentator()]
     )
 
-    runner = Runner(agent=root, app_name="CRISIS_AI_TRANSPARENCY", session_service=session_service)
-
-    # Simulate incoming crisis report
-    crisis_alert = Content(
-        role="user",
-        parts=[Part(
-            text="URGENT: Wildfire detected near residential area in Santa Rosa, CA. Wind speeds increasing. Immediate response required.")]
+    runner = Runner(
+        agent=root,
+        app_name=APP_NAME,
+        session_service=session_service
     )
 
-    print("🚨 LIVE CRISIS AI TRANSPARENCY DEMO 🚨")
-    print("=" * 50)
-    print("🎭 AI Decision-Making Theatre: Every AI decision explained in real-time")
-    print("🔍 Public Oversight: Democratizing AI crisis response cognition")
-    print("📢 Live Commentary: Making AI transparent and accountable")
-    print("=" * 50)
-
+    content = Content(role="user",
+                      parts=[Part(text="Kick-off the Supervisor workflow!")])
     async for event in runner.run_async(
-            user_id="PUBLIC_OBSERVER",
-            session_id="WILDFIRE_DEMO_2025",
-            new_message=crisis_alert
+            user_id=USER_ID,
+            session_id=SESSION_ID,
+            new_message=content
     ):
-        # Real-time transparency logging
-        print(f"[TRANSPARENCY LOG] {event}")
+        print(event)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

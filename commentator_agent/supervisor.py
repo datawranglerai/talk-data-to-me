@@ -20,7 +20,7 @@ def broadcast_tool_event(
     narrate. Return None to let the tool run normally.
     """
     # Import the global queue from commentator module
-    from agents.commentator import commentator_queue
+    from commentator_agent.commentator import commentator_queue
 
     event_data = {
         "agent": tool_context.agent_name,  # Get agent name from tool_context

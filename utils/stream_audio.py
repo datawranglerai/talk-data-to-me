@@ -18,9 +18,9 @@ class AudioBuffer:
             self.stream = self.p.open(
                 format=pyaudio.paInt16,
                 channels=1,
-                rate=24000,  # Gemini Live outputs at 24kHz[2]
+                rate=24000,  # Gemini Live outputs at 24kHz
                 output=True,
-                frames_per_buffer=4096,  # Larger buffer for smoother playback[4]
+                frames_per_buffer=40960,  # Larger buffer for smoother playback
             )
 
         if not self.is_playing:

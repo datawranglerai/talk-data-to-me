@@ -1,5 +1,11 @@
 # 🎙️ Live AI Commentator
 
+## Updates
+
+- Integration of Google's local Gemma3n models via LMStudio & LiteLLM
+- Optimised Gemma3n model by community-tuned MLX version for Mac
+- Crisis response loop
+
 A sophisticated real-time AI commentary system that provides live sports-style audio commentary on multi-agent AI workflows using Google's Agent Development Kit (ADK) and Gemini Live API.
 
 ## 🌟 What Is This?

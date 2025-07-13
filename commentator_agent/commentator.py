@@ -12,7 +12,7 @@ from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.adk.models.lite_llm import LiteLlm
 from google.genai import Client  # Gemini SDK
-from google.genai.types import Content, Part, LiveConnectConfig, Modality
+from google.genai.types import Content, Part, LiveConnectConfig, Modality, ProactivityConfig
 from loguru import logger
 from pydantic import PrivateAttr
 
@@ -24,7 +24,7 @@ _audio_player = CallbackAudioPlayer()
 atexit.register(_audio_player.stop)
 
 MAX_EVENTS = 25  # sliding window size
-GEMINI_LIVE_MODEL = "gemini-2.0-flash-live-001"
+GEMINI_LIVE_MODEL = "gemini-2.5-flash-preview-native-audio-dialog"  # gemini-live-2.5-flash-preview or gemini-2.5-flash-preview-native-audio-dialog
 FALLBACK_MODEL = LiteLlm(model="openai/gpt-4o")  # any OpenAI model
 
 # Global queue for receiving tool events from callbacks
@@ -46,80 +46,6 @@ class LiveCommentator(BaseAgent):
         super().__init__(name=name, sub_agents=[])
         _audio_player.start()
 
-    # async def _stream_gemini_live(self, text: str) -> None:
-    #     try:
-    #         # client = Client(vertexai=True)  # project & key from env
-    #         client = Client(api_key=os.getenv("GOOGLE_API_KEY"))
-    #         async with client.aio.live.connect(
-    #                 model=GEMINI_LIVE_MODEL,
-    #                 config=LiveConnectConfig(
-    #                     response_modalities=[Modality.AUDIO],
-    #                     output_audio_transcription={}
-    #                 ),
-    #         ) as session:
-    #             await session.send_client_content(
-    #                 turns=Content(role="user", parts=[Part(text=text)])
-    #             )
-    #             logger.debug("🎤 Listening for Gemini Live audio response...")
-    #             audio_received = False
-    #             text_received = False
-    #             accumulated_text = ""
-    #
-    #             async for response in session.receive():
-    #                 # Handle different response types from Gemini Live
-    #                 if hasattr(response, 'server_content') and response.server_content:
-    #                     server_content = response.server_content
-    #
-    #                     # Check for audio data in inline_data
-    #                     if hasattr(server_content, 'model_turn') and server_content.model_turn:
-    #                         model_turn = server_content.model_turn
-    #                         if hasattr(model_turn, 'parts') and model_turn.parts:
-    #                             for part in model_turn.parts:
-    #                                 if hasattr(part, 'inline_data') and part.inline_data:
-    #                                     audio_data = part.inline_data.data
-    #                                     audio_received = True
-    #                                     logger.debug(f"🔊 AUDIO RECEIVED: {len(audio_data)} bytes!")
-    #                                     # Audio playback
-    #                                     try:
-    #                                         self._play_audio_chunk(audio_data)
-    #                                     except Exception as e:
-    #                                         logger.error(f"There was an error playing commentary audio: {e}")
-    #                                         import traceback
-    #                                         logger.error(f"Full error: {traceback.format_exc()}")
-    #                                         raise
-    #                                 elif hasattr(part, 'text') and part.text:
-    #                                     text_received = True
-    #                                     accumulated_text += part.text  # Accumulate text
-    #                                     logger.debug(f"📝 Text response: {part.text}")
-    #
-    #                     # Alternative: Check for audio directly on server_content
-    #                     elif hasattr(server_content, 'inline_data') and server_content.inline_data:
-    #                         audio_data = server_content.inline_data.data
-    #                         audio_received = True
-    #                         logger.debug(f"🔊 AUDIO RECEIVED: {len(audio_data)} bytes!")
-    #
-    #                     # Alternative: Check for text directly on server_content
-    #                     elif hasattr(server_content, 'text') and server_content.text:
-    #                         text_received = True
-    #                         accumulated_text += server_content.text
-    #                         logger.debug(f"📝 Text response: {server_content.text}")
-    #
-    #             # Display the complete commentary text after streaming
-    #             if accumulated_text.strip():
-    #                 print(f"\n🎙️ LIVE COMMENTARY: {accumulated_text.strip()}\n")
-    #                 # Store in commentary history to avoid repetition
-    #                 self._commentary_history.append(accumulated_text.strip())
-    #
-    #             if not audio_received and not text_received:
-    #                 print("❌ No audio or text data received in Gemini Live response")
-    #             elif audio_received:
-    #                 print("✅ Gemini Live audio response received successfully!")
-    #     except Exception as e:
-    #         print(f"An error occurred streamining Gemini Live: {e}")
-    #         import traceback
-    #         print(f"Full error: {traceback.format_exc()}")
-    #         raise
-
     async def _stream_gemini_live(self, text: str) -> None:
         try:
             client = Client(api_key=os.getenv("GOOGLE_API_KEY"))
@@ -127,6 +53,9 @@ class LiveCommentator(BaseAgent):
             # Enable audio transcription to get text alongside audio
             config = LiveConnectConfig(
                 response_modalities=[Modality.AUDIO],
+                temperature=0.7,
+                # enable_affective_dialog=True,  # detect emotions and adapt its responses accordingly
+                # proactivity=ProactivityConfig(proactive_audio=True),
                 output_audio_transcription={}  # ← Add this to get transcription
             )
 
@@ -194,17 +123,17 @@ class LiveCommentator(BaseAgent):
         """Rotate between different commentary styles."""
         styles = [
             # <---- ENTERTAINING COMMENTARY PERSONAS ---->
-            # "sports announcer with high energy and play-by-play details",
+            "sports announcer with high energy and play-by-play details",
             # "technical analyst focusing on efficiency and patterns",
             # "strategic commentator analyzing decision-making",
             # "investigative reporter uncovering the story behind the actions",
             # "data scientist explaining the technical implications",
             # <---- CRISIS RESPONSE PERSONAS ---->
-            "emergency management expert analyzing response coordination and decision-making",
-            "public safety analyst explaining resource allocation and priority decisions",
-            "transparency advocate highlighting AI decision reasoning and accountability",
-            "citizen journalist making AI crisis response accessible to the general public",
-            "ethics watchdog ensuring AI systems operate within safety guidelines"
+            # "emergency management expert analyzing response coordination and decision-making",
+            # "public safety analyst explaining resource allocation and priority decisions",
+            # "transparency advocate highlighting AI decision reasoning and accountability",
+            # "citizen journalist making AI crisis response accessible to the general public",
+            # "ethics watchdog ensuring AI systems operate within safety guidelines"
         ]
 
         # Rotate based on event count
@@ -222,14 +151,14 @@ class LiveCommentator(BaseAgent):
         # Calculate session progress
         session_duration = time.time() - self._session_start_time
 
-        base_prompt = f"""You are an AI transparency commentator in the style of a {style}.
+        base_prompt = f"""You are an energetic AI transparency commentator in the style of a {style}.
 
         CRISIS RESPONSE ANALYSIS:
         {narration}
         
         TRANSPARENCY MANDATE:
         - Explain WHY each AI agent made specific decisions
-        - Highlight potential biases or limitations in AI reasoning
+        - Highlight potential biases or limitations in the reasoning that you see
         - Make technical decisions accessible to the general public
         - Point out ethical considerations in crisis AI deployment
         - Emphasize accountability and human oversight needs
@@ -242,7 +171,7 @@ class LiveCommentator(BaseAgent):
         Previous Analysis Topics (avoid repetition):
         {', '.join(recent_commentary[-2:]) if recent_commentary else 'None'}
         
-        Provide insightful commentary that promotes AI transparency and public understanding of how these critical decisions are being made."""
+        Provide insightful commentary that promotes AI transparency and public understanding of how these critical decisions are being made in real-time. Focus on sharp, quick-witted commentary-."""
 
         return base_prompt
 
