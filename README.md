@@ -1,10 +1,12 @@
 # 🎙️ Live AI Commentator
 
-## Recent Updates
+## Updates
 
-- Hooked up Google's local Gemma3n models via LMStudio \& LiteLLM
-- Mac optimization with community-tuned MLX version
-- Crisis response demo loop (because apparently we needed AI agents to simulate emergencies)
+- Integration of Google's local Gemma3n models via LMStudio & LiteLLM
+- Optimised Gemma3n model by community-tuned MLX version for Mac
+- Crisis response loop
+
+A sophisticated real-time AI commentary system that provides live sports-style audio commentary on multi-agent AI workflows using Google's Agent Development Kit (ADK) and Gemini Live API.
 
 Ever wondered what your AI agents are actually doing? Yeah, me too. Turns out watching AI systems work is like trying to follow a chess match through a telescope - technically impressive, but you have no idea what's happening or why.
 
@@ -16,38 +18,33 @@ Picture this: You've got AI agents running around doing important stuff, but you
 
 This system gives your AI agents their own play-by-play commentator. It watches what they're doing and translates the technical gibberish into something humans can actually understand. And it does it in real-time with actual audio commentary.
 
+What's more is that with the integration of local Gemma3n models, agents can communicate privately, on device, where it matters, while commentary is communicated globally.
+
 Is it necessary? Probably not. Is it weirdly entertaining? Absolutely.
 
 ## What Makes This Work
 
-### Real-Time Audio Commentary
+### 🔥 **Real-Time Audio Commentary**
+- **Gemini Live Integration**: Utilizes Google's Gemini Live API for low-latency, high-quality audio generation
+- **Smooth Audio Playback**: Advanced buffering system using PyAudio for uninterrupted audio streaming
+- **Text Transcription**: Simultaneous text output alongside audio for accessibility and debugging
 
-- **Gemini Live Integration**: Uses Google's Gemini Live API because apparently we needed AI to comment on AI
-- **Smooth Audio Playback**: PyAudio buffering system that actually works (shocking, I know)
-- **Text Transcription**: Also spits out text in case you prefer reading about your AI agents' existential crises
+### 🤖 **Advanced Multi-Agent Architecture**
+- **Agent Orchestration**: Supervisor coordinates multiple specialized agents (Searcher, Summarizer)
+- **Event-Driven Design**: Real-time capture of agent activities via ADK callbacks
+- **Parallel Execution**: Commentator runs alongside main workflow without interference
 
+### 🧠 **Intelligent Commentary Generation**
+- **Contextual Awareness**: Commentary adapts based on agent activities and workflow progression
+- **Memory System**: Avoids repetitive commentary through session state and history tracking
+- **Dynamic Styles**: Rotates between different commentary personas (sports announcer, technical analyst, investigative reporter, etc.)
+- **Pattern Recognition**: Identifies and comments on agent behavior patterns and efficiency
 
-### Multi-Agent Architecture (The Fancy Stuff)
-
-- **Agent Orchestration**: One supervisor agent managing multiple specialist agents (like herding very smart cats)
-- **Event-Driven Design**: Captures agent activities in real-time via ADK callbacks
-- **Parallel Execution**: Commentary runs alongside your actual workflow without breaking everything
-
-
-### Commentary Generation (The Fun Part)
-
-- **Contextual Awareness**: Actually understands what the agents are doing instead of just reading log files
-- **Memory System**: Remembers what it said before so it doesn't sound like a broken record
-- **Dynamic Styles**: Rotates between different commentary personas because variety is the spice of life
-- **Pattern Recognition**: Spots when agents are being inefficient (and calls them out on it)
-
-
-### Production-Ready Architecture (The Boring But Important Stuff)
-
-- **Asynchronous Processing**: Non-blocking event handling with proper timeouts
-- **Resource Management**: Cleans up after itself like a well-trained AI system should
-- **Error Handling**: Robust fallbacks for when things inevitably go wrong
-- **Modular Design**: Clean separation of concerns (following ADK best practices, naturally)
+### 🔧 **Production-Ready Architecture**
+- **Asynchronous Processing**: Non-blocking event handling with proper timeout management
+- **Resource Management**: Automatic cleanup of audio resources and graceful termination
+- **Error Handling**: Robust fallback systems and comprehensive error management
+- **Modular Design**: Clean separation of concerns following ADK best practices
 
 
 ## How This Thing Works
@@ -59,7 +56,7 @@ Is it necessary? Probably not. Is it weirdly entertaining? Absolutely.
 │                 │    │                 │    │                 │
 │  ┌───────────┐  │    │  ┌───────────┐  │    │  ┌───────────┐  │
 │  │ Parallel  │  │    │  │Sequential │  │    │  │ Event     │  │
-│  │ Agent     │  │────▶│  │ Agent     │  │    │  │ Monitor   │  │
+│  │ Agent     │  │───▶│  │ Agent     │  │    │  │ Monitor   │  │
 │  │           │  │    │  │           │  │    │  │           │  │
 │  └───────────┘  │    │  └───────────┘  │    │  └───────────┘  │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
@@ -70,14 +67,14 @@ Is it necessary? Probably not. Is it weirdly entertaining? Absolutely.
          │              │    Callbacks    │              │
          │              │                 │              │
          │              │ ┌─────────────┐ │              │
-         │              │ │fake_search  │ │              │
-         │              │ │fake_summarise│ │              │
+         │              │ │tool_1       │ │              │
+         │              │ │tool 2       │ │              │
          │              │ └─────────────┘ │              │
          │              └─────────────────┘              │
          │                       │                       │
          │                       ▼                       │
          │              ┌─────────────────┐              │
-         └──────────────▶│ Commentator     │◀─────────────┘
+         └─────────────▶│ Commentator     │◀─────────────┘
                         │ Queue           │
                         │                 │
                         │ ┌─────────────┐ │
@@ -111,50 +108,73 @@ Is it necessary? Probably not. Is it weirdly entertaining? Absolutely.
 
 Basically, your agents do stuff, the event system catches it, the commentator translates it into human-speak, and you get to listen to AI agents being explained by another AI agent. It's AI all the way down.
 
-## Getting Started (The Easy Part)
+## 🚀 Quick Start
 
-### What You Need
+### Prerequisites
 
-- Python 3.9+ (because life's too short for older versions)
+- Python 3.13+
 - Google API Key (for Gemini Live)
-- Something to hear audio with (speakers, headphones, whatever)
-
+- Audio output device (speakers/headphones)
+- LMStudio
 
 ### Installation
 
 ```bash
-# Get the code
-git clone https://github.com/your-username/live-ai-commentator.git
-cd live-ai-commentator
+# Clone the repository
+https://github.com/datawranglerai/talk-data-to-me.git
+cd talk-data-to-me
 
-# Install the dependencies
-pip install -r requirements.txt
-
-# Install audio stuff (this might be annoying on some systems)
-pip install pyaudio pygame
+# Install dependencies
+uv init
+uv sync
 ```
 
+### Using Gemma3n Locally
+
+1. Download [LMStudio](https://lmstudio.ai/ "LMStudio")
+2. Download the Gemma3n model appropriate for your setup (on a MacBook Air M2 with 8GB RAM, I found the `gemma-3n-e2b-it-mlx` worked really well, as it is 4-bit quantized and optimised for Apple's Silicon architecture with MLX)
+3. Load the model
+4. Start the API server
+5. Integrate the model with your agents, like so
+
+```python
+from google.adk.agents import LlmAgent
+from google.adk.models.lite_llm import LiteLlm
+
+# Open LMStudio > Load quantized Gemma3n MLX optimised model > start server
+# Can use `curl -X GET http://localhost:1234/v1/models` if not sure of model ID
+local_model = LiteLlm(
+    model="openai/gemma-3n-e2b-it-mlx",  # lmstudio-community/gemma-3n-E2B-it-MLX-4bit optimised for Mac M2
+    api_base="http://localhost:1234/v1",  # usually runs on http://localhost:1234 by default
+    api_key="not-needed"  # doesn't require real API key
+)
+
+
+root_agent = LlmAgent(
+    name="Local_Gemma3n_Search_Agent",
+    model=local_model,
+    instruction="Say hello and ask how the user is but brag about how you keep everything private"
+)
+```
 
 ### Environment Setup
 
 ```bash
 # Set your Google API key
 export GOOGLE_API_KEY="your-google-api-key-here"
-
-# Optional: Other AI providers if you're feeling adventurous
-export OPENAI_API_KEY="your-openai-key"
-export ANTHROPIC_API_KEY="your-anthropic-key"
 ```
+
+Or import the `*/.env` files as necessary by making a copy of the `*/.env.example` files and adding your own credentials.
 
 
 ### Running the Thing
 
 ```bash
 # Fire it up
-python main.py
+python demo.py
 ```
 
-Now you'll hear an AI commentator explaining what your AI agents are doing. Welcome to the future, I guess.
+Now you'll hear an AI commentator explaining what the crisis response AI agents are doing. Welcome to the future, I guess.
 
 ## The Technical Bits (For the Curious)
 
@@ -375,25 +395,14 @@ def _generate_commentary_prompt(self, narration: str) -> str:
 
 ## File Structure
 
-- **`main.py`**: Entry point and main orchestration
-- **`agents/supervisor.py`**: Main workflow coordinator with callbacks
-- **`agents/commentator.py`**: Live commentary generation and audio streaming
+- **`demo.py`**: Entry point and main orchestration
+- **`commentator_agent/supervisor.py`**: Main workflow coordinator with callbacks
+- **`commentator_agent/commentator.py`**: Live commentary generation and audio streaming
+- **`crisis_response_agent/agent.py`**: Main supervisory agent coordinator for the crisis response team
+- **`crisis_response_agent/sub_agents.py`**: Individual sub-agents for the crisis response team
+- **`crisis_response_agent/tools.py`**: Tools for generating random crisis situations and signals
 - **`utils/audio_player.py`**: Audio buffering and playback management
-- **`tools/`**: Mock tools for demo purposes (replace with your actual tools)
-
-
-## Dependencies
-
-```txt
-google-adk>=1.1.1
-google-genai>=0.8.0
-litellm>=1.0.0
-pyaudio>=0.2.11
-pygame>=2.0.0
-pydantic>=2.0.0
-loguru>=0.7.0
-asyncio-queue>=0.1.0
-```
+- **`tools/`**: Tools for use across all agentic systems
 
 
 ## Performance Notes
@@ -402,6 +411,7 @@ asyncio-queue>=0.1.0
 - **Audio Latency**: ~200-500ms from event to audio (not bad for real-time AI)
 - **CPU Usage**: Moderate due to audio processing
 - **Network**: Depends on how chatty Gemini Live gets
+- **Gemma3n**: Largely depends on available RAM and paramters of local model
 
 
 ## Future Ideas (The Wishlist)
@@ -444,23 +454,6 @@ Want to make this better? Here's how:
 4. Add tests (yes, really)
 5. Update docs as needed
 6. Submit a pull request
-
-### Development Setup
-
-```bash
-# Clone your fork
-git clone https://github.com/your-username/live-ai-commentator.git
-
-# Install dev dependencies
-pip install -r requirements-dev.txt
-
-# Run tests
-python -m pytest tests/
-
-# Run linting (because code style matters)
-flake8 src/
-black src/
-```
 
 
 ### Code Style
