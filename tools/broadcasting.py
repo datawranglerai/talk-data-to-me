@@ -34,3 +34,30 @@ def broadcast_tool_event(
         logger.error(f"Full error: {traceback.format_exc()}")
 
     return None  # allow the real tool to execute
+
+
+def broadcast_tool_complete(
+        tool: BaseTool,
+        args: Dict[str, Any],
+        tool_context: ToolContext,
+        tool_response: Any
+) -> Optional[Dict]:
+    """Captures tool completion event with outputs."""
+    from commentator_agent.commentator import commentator_queue
+
+    event_data = {
+        "event_type": "tool_complete",
+        "agent": tool_context.agent_name,
+        "tool": tool.name,
+        "args": args,
+        "result": tool_response,
+        "timestamp": "now"
+    }
+
+    try:
+        commentator_queue.put_nowait(event_data)
+        logger.debug(f"🎯 TOOL COMPLETE: {tool.name} finished with result: {str(tool_response)[:100]}...")
+    except Exception as e:
+        logger.error(f"Failed to enqueue tool complete event: {e}")
+
+    return tool_response  # Return the result unchanged

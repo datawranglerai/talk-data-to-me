@@ -157,11 +157,15 @@ class LiveCommentator(BaseAgent):
         {narration}
         
         TRANSPARENCY MANDATE:
+        - Analyze both the inputs and outputs of tool executions
+        - Comment on the effectiveness and patterns of tool usage
+        - Highlight interesting relationships between inputs and outputs
+        - Keep commentary under 50 words
+        - Focus on the story the input/output data tells about agent behavior
         - Explain WHY each AI agent made specific decisions
+        - Describe which tools are being used and why and what they're doing
         - Highlight potential biases or limitations in the reasoning that you see
         - Make technical decisions accessible to the general public
-        - Point out ethical considerations in crisis AI deployment
-        - Emphasize accountability and human oversight needs
         
         Session Context:
         - Emergency Response Event #{self._event_count}
@@ -169,9 +173,15 @@ class LiveCommentator(BaseAgent):
         - Agents Active: {len(self._buffer)} operations
         
         Previous Analysis Topics (avoid repetition):
-        {', '.join(recent_commentary[-2:]) if recent_commentary else 'None'}
+        {', '.join(recent_commentary[-3:]) if recent_commentary else 'None'}
         
-        Provide insightful commentary that promotes AI transparency and public understanding of how these critical decisions are being made in real-time. Focus on sharp, quick-witted commentary-."""
+        Provide insightful commentary that promotes AI transparency and, more importantly, public understanding of how these critical decisions are being made in real-time. 
+        
+        Take inspiration from Bethesda's CEO Todd Howard when it comes to your delivery and how you speak.
+        
+        Do not talk about the commentary itself - only the crisis response agents. 
+        
+        Focus on sharp, quick-witted commentary."""
 
         return base_prompt
 

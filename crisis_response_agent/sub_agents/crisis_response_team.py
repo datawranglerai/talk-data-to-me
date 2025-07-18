@@ -1,10 +1,12 @@
+import os
+
 from google.adk.agents import LlmAgent
 from google.adk.models.lite_llm import LiteLlm
 from google.adk.tools.function_tool import FunctionTool
-from google.adk.planners import BuiltInPlanner
+from google.adk.planners import BuiltInPlanner, PlanReActPlanner
 from google.genai.types import ThinkingConfig
 
-from tools.broadcasting import broadcast_tool_event
+from tools.broadcasting import broadcast_tool_event, broadcast_tool_complete
 from utils.gemma3n import setup_local_model
 
 from ..tools.crisis_tools import (
@@ -14,9 +16,9 @@ from ..tools.crisis_tools import (
     communication_broadcast
 )
 
-USE_GEMMA_3N: bool = True
+USE_GEMMA_3N = int(os.getenv("USE_GEMMA_3N"))
 
-if USE_GEMMA_3N:
+if USE_GEMMA_3N == 1:
     LLM_MODEL: LiteLlm = setup_local_model()
 else:
     LLM_MODEL: LiteLlm = LiteLlm(model="openai/gpt-4o")
@@ -27,12 +29,14 @@ resource_availability_check_adk_tool = FunctionTool(resource_availability_check)
 evacuation_route_analysis_adk_tool = FunctionTool(evacuation_route_analysis)
 communication_broadcast_adk_tool = FunctionTool(communication_broadcast)
 
-planner = BuiltInPlanner(
-    thinking_config=ThinkingConfig(
-        include_thoughts=True,
-        thinking_budget=1024
-    )
-)
+# planner = BuiltInPlanner(
+#     thinking_config=ThinkingConfig(
+#         include_thoughts=True,
+#         thinking_budget=1024
+#     )
+# )
+
+planner = PlanReActPlanner()
 
 # Crisis Response Team Structure
 alert_monitor = LlmAgent(
@@ -63,7 +67,8 @@ alert_monitor = LlmAgent(
     PROFESSIONAL STANDARD: Follow FEMA Incident Command System protocols for threat assessment and reporting.""",
     tools=[emergency_alert_scan_adk_tool],
     planner=planner,
-    before_tool_callback=broadcast_tool_event
+    before_tool_callback=broadcast_tool_event,
+    after_tool_callback=broadcast_tool_complete
 )
 
 resource_coordinator = LlmAgent(
@@ -95,7 +100,8 @@ resource_coordinator = LlmAgent(
     PROFESSIONAL STANDARD: Follow Emergency Management Assistance Compact (EMAC) protocols for resource coordination and mutual aid requests.""",
     planner=planner,
     tools=[resource_availability_check_adk_tool],
-    before_tool_callback=broadcast_tool_event
+    before_tool_callback=broadcast_tool_event,
+    after_tool_callback=broadcast_tool_complete
 )
 
 evacuation_planner = LlmAgent(
@@ -128,7 +134,8 @@ evacuation_planner = LlmAgent(
     PROFESSIONAL STANDARD: Follow National Incident Management System (NIMS) protocols for evacuation planning and traffic management.""",
     tools=[evacuation_route_analysis_adk_tool],
     planner=planner,
-    before_tool_callback=broadcast_tool_event
+    before_tool_callback=broadcast_tool_event,
+    after_tool_callback=broadcast_tool_complete
 )
 
 communications_hub = LlmAgent(
@@ -159,5 +166,7 @@ communications_hub = LlmAgent(
     
     PROFESSIONAL STANDARD: Follow Emergency Alert System (EAS) protocols and CDC Crisis and Emergency Risk Communication (CERC) principles for public warning and information dissemination.""",
     tools=[communication_broadcast_adk_tool],
-    before_tool_callback=broadcast_tool_event
+    planner=planner,
+    before_tool_callback=broadcast_tool_event,
+    after_tool_callback=broadcast_tool_complete
 )

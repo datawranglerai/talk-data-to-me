@@ -1,8 +1,9 @@
 from google.adk.agents import LlmAgent
 from google.adk.models.lite_llm import LiteLlm
-from google.adk.planners import PlanReActPlanner
+from google.adk.planners import PlanReActPlanner, BuiltInPlanner
+from google.genai.types import ThinkingConfig
 
-from tools.broadcasting import broadcast_tool_event
+from tools.broadcasting import broadcast_tool_event, broadcast_tool_complete
 
 from .sub_agents.crisis_response_team import (
     alert_monitor,
@@ -13,18 +14,30 @@ from .sub_agents.crisis_response_team import (
 
 LLM_MODEL = "openai/gpt-4o"
 
+# re_act_planner = PlanReActPlanner()
+
+planner = BuiltInPlanner(
+    thinking_config=ThinkingConfig(
+        thinking_budget=4096,
+        include_thoughts=True
+    )
+)
+
 
 crisis_supervisor = LlmAgent(
     name="CrisisCoordinator",
     model=LiteLlm(model=LLM_MODEL),
-    planner=PlanReActPlanner(),
+    planner=planner,
+    # planner=re_act_planner,
     instruction="""You are the Crisis Response Coordinator operating under emergency protocols. You must orchestrate a comprehensive multi-phase response using specialized teams.
 
     For each crisis, you will:
     1. Plan your approach step by step
     2. Execute actions with specialist teams explaining why you chose to transfer to specific agents
     3. Reason through their responses
-    4. Provide a final comprehensive plan
+    4. Re-engage with specific agents of your choosing to double-check the plan and adjust accordingly
+    5. Communicate with sub-agents for any updates on the situation
+    6. Provide a final comprehensive plan
 
     ## CRISIS RESPONSE PROTOCOL - REACT METHODOLOGY
     
@@ -96,7 +109,8 @@ crisis_supervisor = LlmAgent(
         evacuation_planner,
         communications_hub
     ],
-    before_tool_callback=broadcast_tool_event
+    before_tool_callback=broadcast_tool_event,
+    after_tool_callback=broadcast_tool_complete
 )
 
 root_agent = crisis_supervisor

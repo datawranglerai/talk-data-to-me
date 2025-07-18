@@ -1,42 +1,56 @@
 # 🎙️ Live AI Commentator
 
-## Updates
+## Recent Updates
 
-- Integration of Google's local Gemma3n models via LMStudio & LiteLLM
-- Optimised Gemma3n model by community-tuned MLX version for Mac
-- Crisis response loop
+- Hooked up Google's local Gemma3n models via LMStudio \& LiteLLM
+- Mac optimization with community-tuned MLX version
+- Crisis response demo loop (because apparently we needed AI agents to simulate emergencies)
 
-A sophisticated real-time AI commentary system that provides live sports-style audio commentary on multi-agent AI workflows using Google's Agent Development Kit (ADK) and Gemini Live API.
+Ever wondered what your AI agents are actually doing? Yeah, me too. Turns out watching AI systems work is like trying to follow a chess match through a telescope - technically impressive, but you have no idea what's happening or why.
 
-## 🌟 What Is This?
+So I built an AI commentator that watches other AI agents and explains what they're doing in real-time. Like having a sports announcer for your code, except instead of "He shoots, he scores!" it's more "The search agent is querying the database... and it's found something interesting!"
 
-Imagine having an AI sports commentator providing live, engaging commentary on your AI agents as they work - that's exactly what this project delivers! Our Live AI Commentator watches AI agent activities in real-time and generates dynamic, contextual audio commentary with the energy and insight of a professional sports broadcaster.
+## What This Actually Does
 
-## ✨ Key Features
+Picture this: You've got AI agents running around doing important stuff, but you're sitting there like a parent watching their kid's soccer game through thick fog. You know *something* is happening, but good luck explaining it to anyone.
 
-### 🔥 **Real-Time Audio Commentary**
-- **Gemini Live Integration**: Utilizes Google's Gemini Live API for low-latency, high-quality audio generation
-- **Smooth Audio Playback**: Advanced buffering system using PyAudio for uninterrupted audio streaming
-- **Text Transcription**: Simultaneous text output alongside audio for accessibility and debugging
+This system gives your AI agents their own play-by-play commentator. It watches what they're doing and translates the technical gibberish into something humans can actually understand. And it does it in real-time with actual audio commentary.
 
-### 🤖 **Advanced Multi-Agent Architecture**
-- **Agent Orchestration**: Supervisor coordinates multiple specialized agents (Searcher, Summarizer)
-- **Event-Driven Design**: Real-time capture of agent activities via ADK callbacks
-- **Parallel Execution**: Commentator runs alongside main workflow without interference
+Is it necessary? Probably not. Is it weirdly entertaining? Absolutely.
 
-### 🧠 **Intelligent Commentary Generation**
-- **Contextual Awareness**: Commentary adapts based on agent activities and workflow progression
-- **Memory System**: Avoids repetitive commentary through session state and history tracking
-- **Dynamic Styles**: Rotates between different commentary personas (sports announcer, technical analyst, investigative reporter, etc.)
-- **Pattern Recognition**: Identifies and comments on agent behavior patterns and efficiency
+## What Makes This Work
 
-### 🔧 **Production-Ready Architecture**
-- **Asynchronous Processing**: Non-blocking event handling with proper timeout management
-- **Resource Management**: Automatic cleanup of audio resources and graceful termination
-- **Error Handling**: Robust fallback systems and comprehensive error management
-- **Modular Design**: Clean separation of concerns following ADK best practices
+### Real-Time Audio Commentary
 
-## 🏗️ Architecture Overview
+- **Gemini Live Integration**: Uses Google's Gemini Live API because apparently we needed AI to comment on AI
+- **Smooth Audio Playback**: PyAudio buffering system that actually works (shocking, I know)
+- **Text Transcription**: Also spits out text in case you prefer reading about your AI agents' existential crises
+
+
+### Multi-Agent Architecture (The Fancy Stuff)
+
+- **Agent Orchestration**: One supervisor agent managing multiple specialist agents (like herding very smart cats)
+- **Event-Driven Design**: Captures agent activities in real-time via ADK callbacks
+- **Parallel Execution**: Commentary runs alongside your actual workflow without breaking everything
+
+
+### Commentary Generation (The Fun Part)
+
+- **Contextual Awareness**: Actually understands what the agents are doing instead of just reading log files
+- **Memory System**: Remembers what it said before so it doesn't sound like a broken record
+- **Dynamic Styles**: Rotates between different commentary personas because variety is the spice of life
+- **Pattern Recognition**: Spots when agents are being inefficient (and calls them out on it)
+
+
+### Production-Ready Architecture (The Boring But Important Stuff)
+
+- **Asynchronous Processing**: Non-blocking event handling with proper timeouts
+- **Resource Management**: Cleans up after itself like a well-trained AI system should
+- **Error Handling**: Robust fallbacks for when things inevitably go wrong
+- **Modular Design**: Clean separation of concerns (following ADK best practices, naturally)
+
+
+## How This Thing Works
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -95,27 +109,31 @@ Imagine having an AI sports commentator providing live, engaging commentary on y
                         └─────────────────┘
 ```
 
-## 🚀 Quick Start
+Basically, your agents do stuff, the event system catches it, the commentator translates it into human-speak, and you get to listen to AI agents being explained by another AI agent. It's AI all the way down.
 
-### Prerequisites
+## Getting Started (The Easy Part)
 
-- Python 3.9+
+### What You Need
+
+- Python 3.9+ (because life's too short for older versions)
 - Google API Key (for Gemini Live)
-- Audio output device (speakers/headphones)
+- Something to hear audio with (speakers, headphones, whatever)
+
 
 ### Installation
 
 ```bash
-# Clone the repository
+# Get the code
 git clone https://github.com/your-username/live-ai-commentator.git
 cd live-ai-commentator
 
-# Install dependencies
+# Install the dependencies
 pip install -r requirements.txt
 
-# Install audio dependencies
-pip install pyaudio pygame  # May require system audio libraries
+# Install audio stuff (this might be annoying on some systems)
+pip install pyaudio pygame
 ```
+
 
 ### Environment Setup
 
@@ -123,25 +141,26 @@ pip install pyaudio pygame  # May require system audio libraries
 # Set your Google API key
 export GOOGLE_API_KEY="your-google-api-key-here"
 
-# Optional: Configure other model providers
+# Optional: Other AI providers if you're feeling adventurous
 export OPENAI_API_KEY="your-openai-key"
 export ANTHROPIC_API_KEY="your-anthropic-key"
 ```
 
-### Basic Usage
+
+### Running the Thing
 
 ```bash
-# Run the live commentator system
+# Fire it up
 python main.py
 ```
 
-You'll hear real-time audio commentary as the AI agents execute their workflow, along with text output in the console.
+Now you'll hear an AI commentator explaining what your AI agents are doing. Welcome to the future, I guess.
 
-## 💡 Key Concepts
+## The Technical Bits (For the Curious)
 
-### 🎯 **Event-Driven Commentary**
+### Event-Driven Commentary
 
-The system uses ADK's callback mechanism to capture agent activities in real-time:
+The system hooks into ADK's callback mechanism to catch agent activities:
 
 ```python
 def broadcast_tool_event(
@@ -167,9 +186,10 @@ searcher = LlmAgent(
 )
 ```
 
-### 🧵 **Asynchronous Queue Communication**
 
-Events flow from the supervisor agents to the commentator via an asyncio queue:
+### Asynchronous Queue Communication
+
+Events flow from agents to commentator via asyncio queue (because threading is for people who like debugging race conditions):
 
 ```python
 # Global queue for cross-agent communication
@@ -180,9 +200,10 @@ async for event in commentator_queue.get():
     await generate_commentary(event)
 ```
 
-### 🎨 **Dynamic Commentary Styles**
 
-The system rotates between different commentary personas to keep output engaging:
+### Dynamic Commentary Styles
+
+The system rotates between different personas to keep things interesting:
 
 ```python
 def _get_commentary_style(self) -> str:
@@ -196,9 +217,10 @@ def _get_commentary_style(self) -> str:
     return styles[self._event_count % len(styles)]
 ```
 
-### 🧠 **Memory and Context Management**
 
-The commentator maintains memory to avoid repetitive commentary:
+### Memory Management
+
+The commentator remembers what it said before (unlike most AI systems):
 
 ```python
 class LiveCommentator(BaseAgent):
@@ -217,9 +239,10 @@ class LiveCommentator(BaseAgent):
         return prompt
 ```
 
-### 🔊 **Audio Streaming Architecture**
 
-Smooth audio playback is achieved through a callback-based audio player:
+### Audio Streaming
+
+Smooth audio playback through callback-based audio player:
 
 ```python
 class CallbackAudioPlayer:
@@ -233,24 +256,28 @@ class CallbackAudioPlayer:
             return (silence, pyaudio.paContinue)
 ```
 
-## 🔧 Configuration
+
+## Configuration (Making It Yours)
 
 ### Commentary Styles
 
-Customize commentary personas in `agents/commentator.py`:
+Want different personalities? Edit `agents/commentator.py`:
 
 ```python
 def _get_commentary_style(self) -> str:
     styles = [
-        "your custom style here",
-        # ... add more styles
+        "sarcastic developer who's seen too many standup meetings",
+        "overly enthusiastic startup founder",
+        "tired sys admin who just wants to go home",
+        # ... add whatever personality disorders you prefer
     ]
     return styles[self._event_count % len(styles)]
 ```
 
+
 ### Audio Settings
 
-Adjust audio parameters in `utils/audio_player.py`:
+Tweak audio parameters in `utils/audio_player.py`:
 
 ```python
 self.stream = self.p.open(
@@ -258,17 +285,18 @@ self.stream = self.p.open(
     channels=1,
     rate=24000,  # Gemini Live sample rate
     output=True,
-    frames_per_buffer=1024,  # Adjust for latency/quality trade-off
+    frames_per_buffer=1024,  # Smaller = lower latency, higher CPU usage
     stream_callback=self._audio_callback
 )
 ```
 
-### Models and Providers
 
-Configure different AI models in your agent definitions:
+### Model Configuration
+
+Mix and match AI models because why not:
 
 ```python
-# Use different models for different agents
+# Use different models for different jobs
 supervisor = SequentialAgent(
     sub_agents=[
         LlmAgent(model="gemini-2.0-flash-live-001"),      # Fast for tools
@@ -281,11 +309,12 @@ commentator = LiveCommentator(
 )
 ```
 
-## 🎯 Advanced Features
+
+## Advanced Features (For the Overachievers)
 
 ### Custom Workflow Integration
 
-Integrate the commentator with your own ADK workflows:
+Hook this into your existing ADK workflows:
 
 ```python
 # Your existing workflow
@@ -296,7 +325,7 @@ your_workflow = SequentialAgent(
     ]
 )
 
-# Create parallel system with commentator
+# Add commentator to the mix
 main_system = ParallelAgent(
     name="MainSystem",
     sub_agents=[
@@ -306,9 +335,10 @@ main_system = ParallelAgent(
 )
 ```
 
+
 ### Event Filtering
 
-Filter which events trigger commentary:
+Only comment on the interesting stuff:
 
 ```python
 def broadcast_tool_event(tool, args, tool_context):
@@ -323,6 +353,7 @@ def broadcast_tool_event(tool, args, tool_context):
         commentator_queue.put_nowait(event_data)
 ```
 
+
 ### Custom Commentary Prompts
 
 Create domain-specific commentary:
@@ -333,25 +364,25 @@ def _generate_commentary_prompt(self, narration: str) -> str:
     
     Current system activities: {narration}
     
-    Provide insightful commentary focusing on:
+    Focus on:
     - {self.focus_area_1}
     - {self.focus_area_2}
-    - Performance implications
+    - Why this matters
     
-    Keep it under 30 words, high energy!"""
+    Keep it under 30 words and make it interesting!"""
 ```
 
-## 🛠️ Technical Implementation
 
-### Core Components
+## File Structure
 
 - **`main.py`**: Entry point and main orchestration
-- **`agents/supervisor.py`**: Main workflow coordinator with tool callbacks
+- **`agents/supervisor.py`**: Main workflow coordinator with callbacks
 - **`agents/commentator.py`**: Live commentary generation and audio streaming
 - **`utils/audio_player.py`**: Audio buffering and playback management
-- **`tools/`**: Mock tools for demonstration (replace with real tools)
+- **`tools/`**: Mock tools for demo purposes (replace with your actual tools)
 
-### Dependencies
+
+## Dependencies
 
 ```txt
 google-adk>=1.1.1
@@ -364,45 +395,55 @@ loguru>=0.7.0
 asyncio-queue>=0.1.0
 ```
 
-### Performance Considerations
 
-- **Memory Usage**: Commentary history is bounded (configurable)
-- **Audio Latency**: ~200-500ms from event to audio output
-- **CPU Usage**: Moderate due to real-time audio processing
-- **Network**: Depends on Gemini Live API usage
+## Performance Notes
 
-## 🔮 Future Possibilities
+- **Memory Usage**: Commentary history is bounded (adjustable)
+- **Audio Latency**: ~200-500ms from event to audio (not bad for real-time AI)
+- **CPU Usage**: Moderate due to audio processing
+- **Network**: Depends on how chatty Gemini Live gets
 
-### 🎵 **Enhanced Audio Features**
-- Multiple commentary tracks (different languages/styles)
-- Audio effects and background music
+
+## Future Ideas (The Wishlist)
+
+### Audio Enhancements
+
+- Multiple commentary tracks for different audiences
+- Audio effects and background music (because why not make it even more extra)
 - Voice cloning for personalized commentators
 
-### 📊 **Advanced Analytics**
+
+### Analytics
+
 - Performance metrics dashboard
 - Commentary quality analysis
-- Agent efficiency reporting
+- Agent efficiency reporting (so you can judge your AI agents)
 
-### 🌐 **Integration Opportunities**
+
+### Integration Options
+
 - Web dashboard with live visualization
 - Slack/Discord bot integration
 - REST API for remote commentary triggering
 
-### 🤝 **Multi-Agent Enhancements**
-- Commentator debates (multiple perspectives)
+
+### Multi-Agent Fun
+
+- Commentator debates (let AI argue about AI)
 - Specialized domain commentators
-- Interactive Q&A with commentators
+- Interactive Q\&A with commentators
 
-## 🤝 Contributing
 
-We welcome contributions! Here's how to get started:
+## Contributing
 
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Make your changes** following the existing code style
-4. **Add tests** for new functionality
-5. **Update documentation** as needed
-6. **Submit a pull request**
+Want to make this better? Here's how:
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-amazing-idea`
+3. Make your changes (and try not to break everything)
+4. Add tests (yes, really)
+5. Update docs as needed
+6. Submit a pull request
 
 ### Development Setup
 
@@ -410,53 +451,48 @@ We welcome contributions! Here's how to get started:
 # Clone your fork
 git clone https://github.com/your-username/live-ai-commentator.git
 
-# Install development dependencies
+# Install dev dependencies
 pip install -r requirements-dev.txt
 
 # Run tests
 python -m pytest tests/
 
-# Run linting
+# Run linting (because code style matters)
 flake8 src/
 black src/
 ```
 
+
 ### Code Style
 
-- Follow PEP 8 guidelines
+- Follow PEP 8 (it's not optional)
 - Use type hints throughout
-- Add comprehensive docstrings
-- Include unit tests for new features
+- Write docstrings that humans can understand
+- Add tests for new features
 - Follow ADK best practices
 
-## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## License
 
-## 🙏 Acknowledgments
+MIT License - see the [LICENSE](LICENSE) file for details. Do whatever you want with this code, just don't blame me if it achieves sentience.
 
-- **Google ADK Team** for the powerful Agent Development Kit framework
-- **Google AI** for the Gemini Live API enabling real-time audio generation
-- **OpenAI & Anthropic** for additional LLM capabilities via LiteLLM
+## Credits
+
+- **Google ADK Team** for building the framework that makes this possible
+- **Google AI** for the Gemini Live API
+- **OpenAI \& Anthropic** for additional LLM support via LiteLLM
 - **ADK Community** for patterns and best practices
+- **Everyone who's ever wished AI would just explain itself** - this one's for you
 
-## 📚 Further Reading
+
+## Further Reading
 
 - [Google ADK Documentation](https://developers.google.com/agent-development-kit)
 - [Gemini Live API Guide](https://developers.google.com/gemini/docs/live)
 - [Multi-Agent Systems with ADK](https://developers.google.com/agent-development-kit/docs/multi-agent)
 - [ADK Custom Agents Tutorial](https://developers.google.com/agent-development-kit/docs/custom-agents)
 
----
+**Built with Google's Agent Development Kit** (and a healthy dose of curiosity about what AI agents actually do all day)
 
-**Built with ❤️ using Google's Agent Development Kit**
+*Making AI workflows less mysterious, one commentary at a time.*
 
-*Transform your AI workflows into engaging, commentated experiences!*
-
-[1] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/collection_590ac644-406a-4bf2-92dd-ba24c95aef71/fd6bcff4-c597-41cc-a9a7-b9acbfc1941a/Google-ADK-Custom-Agent.pdf
-[2] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/collection_590ac644-406a-4bf2-92dd-ba24c95aef71/23f7e58a-0084-41b8-9685-fa133850cff4/Google-ADK-Multi-Agent-Systems.pdf
-[3] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/collection_590ac644-406a-4bf2-92dd-ba24c95aef71/45bf34e0-12c8-49dc-b9f8-b5bd2eecda48/Google-ADK-LLM-Agents.pdf
-[4] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/collection_590ac644-406a-4bf2-92dd-ba24c95aef71/faf04a22-707a-4809-883d-1567dd56a3b5/Google-Agent-Development-Kit-ADK-Tutorials.pdf
-[5] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/collection_590ac644-406a-4bf2-92dd-ba24c95aef71/e91c54b6-e532-4825-a3eb-ea1edcdaa536/Google-ADK-Using-Different-Models.pdf
-[6] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/collection_590ac644-406a-4bf2-92dd-ba24c95aef71/c931bcf4-649e-451e-a1fa-5d9e123ec85f/Google-Agent-Development-Kit-ADK-Core-Concepts.pdf
-[7] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/collection_590ac644-406a-4bf2-92dd-ba24c95aef71/ce3ca1fd-15c1-4076-a767-0aa92d7bd642/Google-ADK-Workflow-Agents.pdf
