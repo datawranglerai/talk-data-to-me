@@ -3,7 +3,7 @@ from google.adk.models.lite_llm import LiteLlm
 from google.adk.planners import PlanReActPlanner, BuiltInPlanner
 from google.genai.types import ThinkingConfig
 
-from tools.broadcasting import broadcast_tool_event, broadcast_tool_complete
+from tools.broadcasting import broadcast_tool_event, broadcast_tool_complete, broadcast_llm_reasoning
 
 from .sub_agents.crisis_response_team import (
     alert_monitor,
@@ -18,7 +18,7 @@ LLM_MODEL = "openai/gpt-4o"
 
 planner = BuiltInPlanner(
     thinking_config=ThinkingConfig(
-        thinking_budget=4096,
+        thinking_budget=8192,
         include_thoughts=True
     )
 )
@@ -110,7 +110,8 @@ crisis_supervisor = LlmAgent(
         communications_hub
     ],
     before_tool_callback=broadcast_tool_event,
-    after_tool_callback=broadcast_tool_complete
+    after_tool_callback=broadcast_tool_complete,
+    after_model_callback=broadcast_llm_reasoning
 )
 
 root_agent = crisis_supervisor

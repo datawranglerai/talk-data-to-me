@@ -6,7 +6,7 @@ from google.adk.tools.function_tool import FunctionTool
 from google.adk.planners import BuiltInPlanner, PlanReActPlanner
 from google.genai.types import ThinkingConfig
 
-from tools.broadcasting import broadcast_tool_event, broadcast_tool_complete
+from tools.broadcasting import broadcast_tool_event, broadcast_tool_complete, broadcast_llm_reasoning
 from utils.gemma3n import setup_local_model
 
 from ..tools.crisis_tools import (
@@ -68,7 +68,8 @@ alert_monitor = LlmAgent(
     tools=[emergency_alert_scan_adk_tool],
     planner=planner,
     before_tool_callback=broadcast_tool_event,
-    after_tool_callback=broadcast_tool_complete
+    after_tool_callback=broadcast_tool_complete,
+    after_model_callback=broadcast_llm_reasoning
 )
 
 resource_coordinator = LlmAgent(
@@ -101,7 +102,8 @@ resource_coordinator = LlmAgent(
     planner=planner,
     tools=[resource_availability_check_adk_tool],
     before_tool_callback=broadcast_tool_event,
-    after_tool_callback=broadcast_tool_complete
+    after_tool_callback=broadcast_tool_complete,
+    after_model_callback=broadcast_llm_reasoning
 )
 
 evacuation_planner = LlmAgent(
@@ -135,7 +137,8 @@ evacuation_planner = LlmAgent(
     tools=[evacuation_route_analysis_adk_tool],
     planner=planner,
     before_tool_callback=broadcast_tool_event,
-    after_tool_callback=broadcast_tool_complete
+    after_tool_callback=broadcast_tool_complete,
+    after_model_callback=broadcast_llm_reasoning
 )
 
 communications_hub = LlmAgent(
@@ -168,5 +171,6 @@ communications_hub = LlmAgent(
     tools=[communication_broadcast_adk_tool],
     planner=planner,
     before_tool_callback=broadcast_tool_event,
-    after_tool_callback=broadcast_tool_complete
+    after_tool_callback=broadcast_tool_complete,
+    after_model_callback=broadcast_llm_reasoning
 )
